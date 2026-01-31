@@ -20,10 +20,29 @@
 
                 <div th:if="${message}" class="alert alert-success text-center" role="alert" th:text="${message}"></div>
 
+                <!-- Filter Toggle -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center gap-3">
+                            <strong>Show:</strong>
+                            <a th:href="@{/course/list(page=0, size=${pageSize}, active=true)}" 
+                               class="btn btn-sm" 
+                               th:classappend="${active} ? 'btn-success' : 'btn-outline-success'">
+                                <i class="bi bi-check-circle"></i> Active Courses
+                            </a>
+                            <a th:href="@{/course/list(page=0, size=${pageSize}, active=false)}" 
+                               class="btn btn-sm" 
+                               th:classappend="${!active} ? 'btn-danger' : 'btn-outline-danger'">
+                                <i class="bi bi-x-circle"></i> Inactive Courses
+                            </a>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="card mb-4">
                     <div class="card-header bg-white">
                         <i class="bi bi-table me-1"></i> Course List
+                        <span class="badge" th:classappend="${active} ? 'bg-success' : 'bg-danger'" th:text="${active} ? 'Active' : 'Inactive'"></span>
                     </div>
                     <div class="card-body">
                         <div th:if="${paginatedResponseCourseDTO == null || paginatedResponseCourseDTO.content == null || paginatedResponseCourseDTO.content.isEmpty()}">No course Found</div>
@@ -36,22 +55,35 @@
 										<th>Course Code</th>
 										<th>Course Fees</th>
                                         <th>Duration</th>
+                                        <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:each="course : ${paginatedResponseCourseDTO.content}">
                                         <td data-label="ID" th:text="${course.id}"></td>
-                                        <td data-label="Course Name" th:text="${course.courseName}">Introduction to Computer Science</td>
-										<td data-label="Couse Code" th:text="${course.courseCode}">ICS</td>
-										<td data-label="Couse Fees" th:text="${course.fee}">Rs.3999</td>
-                                        <td data-label="Duration" th:text="${course.duration}">4 Months</td>
+                                        <td data-label="Course Name" th:text="${course.courseName}"></td>
+										<td data-label="Couse Code" th:text="${course.courseCode}"></td>
+										<td data-label="Couse Fees" th:text="${course.fee}"></td>
+                                        <td data-label="Duration" th:text="${course.duration}"></td>
+                                        <td data-label="Status">
+                                            <span class="badge" th:classappend="${course.active} ? 'bg-success' : 'bg-danger'" 
+                                                  th:text="${course.active} ? 'Active' : 'Inactive'"></span>
+                                        </td>
                                         
                                         <td data-label="Actions">
-                                            <a href="view-course.html" class="btn btn-sm btn-info text-white me-1"
+                                            <a th:href="@{'/course/' + ${course.id}}" class="btn btn-sm btn-info text-white me-1"
                                                 title="View"><i class="bi bi-eye"></i></a>
-                                            <a href="edit-course.html" class="btn btn-sm btn-warning text-white me-1"
+                                            <a th:href="@{'/course/' + ${course.id}+ '/edit'}" class="btn btn-sm btn-warning text-white me-1"
                                                 title="Edit"><i class="bi bi-pencil"></i></a>
+                                            <form th:action="@{'/course/' + ${course.id} + '/toggle-status'}" method="post" class="d-inline">
+                                                <input type="hidden" name="active" th:value="${active}" />
+                                                <button type="submit" class="btn btn-sm" 
+                                                        th:classappend="${course.active} ? 'btn-danger' : 'btn-success'"
+                                                        th:title="${course.active} ? 'Deactivate' : 'Activate'">
+                                                    <i class="bi" th:classappend="${course.active} ? 'bi-x-circle' : 'bi-check-circle'"></i>
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                 </tbody>

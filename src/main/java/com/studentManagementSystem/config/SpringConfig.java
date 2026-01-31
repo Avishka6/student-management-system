@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+
 @Configuration
 @EnableWebSecurity
 public class SpringConfig {
@@ -29,7 +30,13 @@ public class SpringConfig {
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/dashboard", true)
                         .permitAll())
-                .logout(logout -> logout.logoutSuccessUrl("/login?logout").permitAll());
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll())
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/logout"));
         return http.build();
     }
 
